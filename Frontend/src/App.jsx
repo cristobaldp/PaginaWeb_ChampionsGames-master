@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import GameChooser from "./pages/GameChooser";
 import Ranking from "./pages/Ranking";
 import "./App.css";
+import { mockGames } from "./mock/games";
 
 
 export default function App() {
@@ -12,11 +13,24 @@ export default function App() {
   const [screen, setScreen] = useState("home");
 
   // Cargar juegos desde el backend
+
+
   useEffect(() => {
     fetch("http://localhost:3000/api/games")
       .then((res) => res.json())
-      .then((data) => setGames(data));
+      .then((data) => {
+        if (data && data.length > 0) {
+          setGames(data);
+        } else {
+          setGames(mockGames);
+        }
+      })
+      .catch(() => {
+        // Si el backend no responde → usa mock data
+        setGames(mockGames);
+      });
   }, []);
+
 
   function start() {
     setScreen("game");
