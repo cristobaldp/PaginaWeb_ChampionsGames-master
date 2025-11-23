@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import Home from "./pages/Home";
 import GameChooser from "./pages/GameChooser";
 import Ranking from "./pages/Ranking";
+import "./App.css";
+
 
 export default function App() {
   const [games, setGames] = useState([]);
