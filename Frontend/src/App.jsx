@@ -1,35 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import Home from "./pages/Home";
+import GameChooser from "./pages/GameChooser";
+import Ranking from "./pages/Ranking";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [games, setGames] = useState([]);
+  const [index, setIndex] = useState(0);
+  const [votes, setVotes] = useState([]);
+  const [screen, setScreen] = useState("home");
+
+  // Cargar juegos desde el backend
+  useEffect(() => {
+    fetch("http://localhost:3000/api/games")
+      .then((res) => res.json())
+      .then((data) => setGames(data));
+  }, []);
+
+  function start() {
+    setScreen("game");
+  }
+
+  function chooseGame(game) {
+    setVotes([...votes, game]);
+
+    if (index < games.length - 2) {
+      setIndex(index + 2);
+    } else {
+      setScreen("ranking");
+    }
+  }
+
+  function restart() {
+    setIndex(0);
+    setVotes([]);
+    setScreen("home");
+  }
+
+  const ranking = [...votes];
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {screen === "home" && <Home onStart={start} />}
+      {screen === "game" && (
+        <GameChooser games={games} index={index} chooseGame={chooseGame} />
+      )}
+      {screen === "ranking" && (
+        <Ranking ranking={ranking} onRestart={restart} />
+      )}
     </>
-  )
+  );
 }
-
-export default App
