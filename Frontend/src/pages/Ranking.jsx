@@ -1,14 +1,19 @@
 export default function Ranking({ ranking, onRestart }) {
   return (
-    <div>
-      <h2>Tu Ranking Final</h2>
-      <ul>
+    <div className="ranking">
+      <h2>🎮 Tu Ranking Final</h2>
+
+      <div className="ranking-list">
         {ranking.map((g, i) => (
-          <li key={g._id || i}>
-            {i + 1}. {g.name}
-          </li>
+          <div className="ranking-item" key={i}>
+            <img src={g.image} />
+            <div>
+              <h3>{i + 1}. {g.name}</h3>
+              <p>{g.genres?.join(", ")}</p>
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
 
       <button onClick={onRestart}>Volver a empezar</button>
     </div>
