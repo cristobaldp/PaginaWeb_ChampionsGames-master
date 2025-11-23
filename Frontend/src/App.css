@@ -1,26 +1,81 @@
-/* CENTRAR LA PANTALLA COMPLETA */
+/* ====== RETROFUTURISTA / SYNTHWAVE ====== */
+
+body {
+  background: radial-gradient(circle at top, #2b1055, #000000 70%);
+  font-family: "Press Start 2P", cursive;
+}
+
+/* Contenedor centrado */
 .home {
   display: flex;
   flex-direction: column;
-  justify-content: center;  
-  align-items: center;        
-  height: 100vh;              
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #ffffff;
   text-align: center;
-  color: white;
 }
 
-/* ESTILO DEL BOTÓN */
+/* TÍTULO */
+.home h1 {
+  font-size: 32px;
+  letter-spacing: 3px;
+  color: #ff00e6;
+  text-shadow:
+    0 0 4px #ff00e6,
+    0 0 10px #ff00e6,
+    0 0 20px #ff33ee,
+    0 0 40px #ff00e6;
+  margin: 0 0 20px 0;
+}
+
+/* SUBTÍTULO */
+.home p {
+  color: #a7a7ff;
+  font-size: 12px;
+  text-shadow: 0 0 4px #6a33ff;
+  margin-bottom: 30px;
+}
+
+/* BOTÓN */
 .home button {
-  padding: 12px 24px;
-  margin-top: 20px;
-  font-size: 18px;
-  background-color: #111;
-  color: white;
+  padding: 14px 28px;
+  font-size: 14px;
+  background-color: #240046;
+  color: #ff00e6;
+  border: 2px solid #ff00e6;
   border-radius: 8px;
-  border: 2px solid white;
   cursor: pointer;
+
+  box-shadow:
+    0 0 8px #ff00e6,
+    0 0 16px #ff00e6 inset;
+
+  transition: 0.2s ease;
 }
 
+/* ANIMACIÓN BOTÓN */
 .home button:hover {
-  background-color: #222;
+  background-color: #35006e;
+  box-shadow:
+    0 0 12px #ff00e6,
+    0 0 24px #ff00e6;
+  transform: scale(1.05);
+}
+
+/* EFECTO SCANLINES (muy synthwave) */
+.home::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.03) 0px,
+    rgba(255, 255, 255, 0.03) 1px,
+    transparent 3px
+  );
 }
