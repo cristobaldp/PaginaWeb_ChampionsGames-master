@@ -1,8 +1,18 @@
+<<<<<<< Updated upstream
+=======
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+>>>>>>> Stashed changes
 import { useEffect, useState } from "react";
 import Home from "./pages/Home";
 import GameChooser from "./pages/GameChooser";
 import Ranking from "./pages/Ranking";
+<<<<<<< Updated upstream
 import "./App.css";
+=======
+import GameDetail from "./pages/GameDetail";
+
+import Navbar from "./components/Navbar";
+>>>>>>> Stashed changes
 import { mockGames } from "./mock/games";
 
 
@@ -38,13 +48,21 @@ export default function App() {
   }
 
   function chooseGame(game) {
+<<<<<<< Updated upstream
     setSelectedGame(game);
     setVotes([...votes, game]);
+=======
+    setVotes((prev) => [...prev, game]);
+>>>>>>> Stashed changes
 
     if (index < games.length - 2) {
       setIndex(index + 2);
     } else {
+<<<<<<< Updated upstream
       setScreen("ranking");
+=======
+      navigate("/ranking");
+>>>>>>> Stashed changes
     }
   }
 
@@ -54,6 +72,7 @@ export default function App() {
     setScreen("home");
   }
 
+<<<<<<< Updated upstream
   const ranking = [...votes];
 
   return (
@@ -71,6 +90,36 @@ export default function App() {
       {screen === "ranking" && (
         <Ranking ranking={ranking} onRestart={restart} />
       )}
+=======
+  const navigate = useNavigate();
+
+  return (
+    <>
+      <Navbar />
+
+      <div style={{ paddingTop: "80px" }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+
+          <Route
+            path="/choose"
+            element={
+              <GameChooser games={games} index={index} chooseGame={chooseGame} />
+            }
+          />
+
+          <Route
+            path="/game/:id"
+            element={<GameDetail games={games} />}
+          />
+
+          <Route
+            path="/ranking"
+            element={<Ranking ranking={votes} onRestart={restart} />}
+          />
+        </Routes>
+      </div>
+>>>>>>> Stashed changes
     </>
   );
 }
