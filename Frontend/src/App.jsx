@@ -7,6 +7,7 @@ import { mockGames } from "./mock/games";
 
 
 export default function App() {
+  const [selectedGame, setSelectedGame] = useState(null);
   const [games, setGames] = useState([]);
   const [index, setIndex] = useState(0);
   const [votes, setVotes] = useState([]);
@@ -37,6 +38,7 @@ export default function App() {
   }
 
   function chooseGame(game) {
+    setSelectedGame(game);
     setVotes([...votes, game]);
 
     if (index < games.length - 2) {
@@ -58,7 +60,13 @@ export default function App() {
     <>
       {screen === "home" && <Home onStart={start} />}
       {screen === "game" && (
-        <GameChooser games={games} index={index} chooseGame={chooseGame} />
+        <GameChooser
+          games={games}
+          index={index}
+          chooseGame={chooseGame}
+          selectedGame={selectedGame}
+        />
+
       )}
       {screen === "ranking" && (
         <Ranking ranking={ranking} onRestart={restart} />
