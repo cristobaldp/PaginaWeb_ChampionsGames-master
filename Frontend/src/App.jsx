@@ -1,10 +1,12 @@
-
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 import Home from "./pages/Home";
 import GameChooser from "./pages/GameChooser";
 import Ranking from "./pages/Ranking";
 import GameDetail from "./pages/GameDetail";
 
+import Navbar from "./components/Navbar";
 import "./styles/gameDetail.css";
 
 import { mockGames } from "./mock/games";
