@@ -2,16 +2,7 @@
 
 body {
   background: radial-gradient(circle at top, #2b1055, #000000 70%);
-  background-size: 200% 200%;
   font-family: "Press Start 2P", cursive;
-  animation: bgMove 15s ease infinite;
-}
-
-/* Movimiento del fondo */
-@keyframes bgMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }
 
 /* Contenedor centrado */
@@ -30,39 +21,12 @@ body {
   font-size: 32px;
   letter-spacing: 3px;
   color: #ff00e6;
-
-  animation: neonPulse 2.5s infinite;
-
   text-shadow:
     0 0 4px #ff00e6,
     0 0 10px #ff00e6,
     0 0 20px #ff33ee,
     0 0 40px #ff00e6;
-}
-
-/* Animación del título neon */
-@keyframes neonPulse {
-  0% {
-    text-shadow:
-      0 0 4px #ff00e6,
-      0 0 10px #ff00e6,
-      0 0 20px #ff33ee,
-      0 0 40px #ff00e6;
-  }
-  50% {
-    text-shadow:
-      0 0 6px #ff33ee,
-      0 0 14px #ff33ee,
-      0 0 25px #ff00e6,
-      0 0 50px #ff33ee;
-  }
-  100% {
-    text-shadow:
-      0 0 4px #ff00e6,
-      0 0 10px #ff00e6,
-      0 0 20px #ff33ee,
-      0 0 40px #ff00e6;
-  }
+  margin: 0 0 20px 0;
 }
 
 /* SUBTÍTULO */
@@ -88,17 +52,18 @@ body {
     0 0 16px #ff00e6 inset;
 
   transition: 0.2s ease;
-  animation: buttonPulse 2s infinite ease-in-out;
 }
 
-/* Animación Button Pulse */
-@keyframes buttonPulse {
-  0% { transform: scale(1); box-shadow: 0 0 8px #ff00e6; }
-  50% { transform: scale(1.05); box-shadow: 0 0 16px #ff33ee; }
-  100% { transform: scale(1); box-shadow: 0 0 8px #ff00e6; }
+/* ANIMACIÓN BOTÓN */
+.home button:hover {
+  background-color: #35006e;
+  box-shadow:
+    0 0 12px #ff00e6,
+    0 0 24px #ff00e6;
+  transform: scale(1.05);
 }
 
-/* Efecto Scanlines animado */
+/* EFECTO SCANLINES (muy synthwave) */
 .home::after {
   content: "";
   position: fixed;
@@ -107,20 +72,12 @@ body {
   width: 100%;
   height: 100%;
   pointer-events: none;
-
   background: repeating-linear-gradient(
     to bottom,
     rgba(255, 255, 255, 0.03) 0px,
     rgba(255, 255, 255, 0.03) 1px,
     transparent 3px
   );
-
-  animation: scanMove 8s linear infinite;
-}
-
-@keyframes scanMove {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(4px); }
 }
 
 /* ======= GAME CHOOSER RETROFUTURISTA ======= */
@@ -148,30 +105,17 @@ body {
   border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
-
-  animation: cardGlow 3.5s infinite ease-in-out;
-
   transition: 0.25s ease;
   box-shadow:
     0 0 10px #ff00e6,
     0 0 20px rgba(255, 0, 230, 0.5);
 }
 
-/* Glow animado de las tarjetas */
-@keyframes cardGlow {
-  0% {
-    box-shadow: 0 0 10px #ff00e6, 0 0 20px rgba(255, 0, 230, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 14px #ff33ee, 0 0 28px rgba(255, 0, 230, 0.8);
-  }
-  100% {
-    box-shadow: 0 0 10px #ff00e6, 0 0 20px rgba(255, 0, 230, 0.5);
-  }
-}
-
 .game-card:hover {
   transform: scale(1.05);
+  box-shadow:
+    0 0 15px #ff00e6,
+    0 0 30px rgba(255, 0, 230, 0.8);
 }
 
 .game-image img {
@@ -219,8 +163,10 @@ body {
   border: 2px solid #ff00e6;
   padding: 12px;
   border-radius: 10px;
+
   display: flex;
   gap: 12px;
+
   box-shadow:
     0 0 10px #ff00e6,
     0 0 20px rgba(255, 0, 230, 0.5);
@@ -243,3 +189,5 @@ body {
   font-size: 12px;
   color: #a7a7ff;
 }
+
+
