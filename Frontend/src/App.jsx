@@ -1,12 +1,7 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Home from "./pages/Home";
 import GameChooser from "./pages/GameChooser";
 import Ranking from "./pages/Ranking";
-import "./App.css";
-import GameDetail from "./pages/GameDetail";
-import Navbar from "./components/Navbar";
-import "./styles/gameDetail.css";
 import "./App.css";
 import { mockGames } from "./mock/games";
 
@@ -45,20 +40,12 @@ export default function App() {
   function chooseGame(game) {
     setSelectedGame(game);
     setVotes([...votes, game]);
-    setVotes([...votes, game]);
-    if (index < games.length - 2) setIndex(index + 2);
-    setSelectedGame(game);
-    setVotes([...votes, game]);
-
 
     if (index < games.length - 2) {
       setIndex(index + 2);
     } else {
       setScreen("ranking");
     }
-      setScreen("ranking");
-    }
-
   }
 
   function restart() {
@@ -80,26 +67,10 @@ export default function App() {
           selectedGame={selectedGame}
         />
 
-  const ranking = [...votes];
-
-  return (
-    <BrowserRouter>
-      <Navbar />
-
-      <div style={{ paddingTop: "80px" }}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/choose" element={<GameChooser games={games} index={index} chooseGame={chooseGame} />} />
-          <Route path="/game/:id" element={<GameDetail games={games} chooseGame={chooseGame} />} />
-          <Route path="/ranking" element={<Ranking ranking={votes} onRestart={restart} />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
       )}
       {screen === "ranking" && (
         <Ranking ranking={ranking} onRestart={restart} />
       )}
-    </>
     </>
   );
 }
