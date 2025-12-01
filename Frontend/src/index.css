@@ -1,72 +1,60 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+/* ====== Fondo global synthwave (no tapa contenido) ====== */
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background: radial-gradient(circle at top, #2b1055, #000000 70%);
-  font-family: "Press Start 2P", cursive;
-  margin: 0;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #535bf2;
-}
-
+/* background y animación */
 body {
   margin: 0;
   min-width: 320px;
+  min-height: 100vh;
+
+  /* fondo principal (alineado con tu App.css) */
+  background: radial-gradient(circle at top, #2b1055 0%, #170a2a 40%, #000000 70%);
+  background-size: 180% 180%;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-position: center top;
+
+  /* animación suave */
+  animation: bgMove 20s linear infinite;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* movimiento sutil del gradiente */
+@keyframes bgMove {
+  0% { background-position: 0% 40%; }
+  50% { background-position: 100% 60%; }
+  100% { background-position: 0% 40%; }
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
+/* scanlines: se ponen DETRÁS del contenido (z-index negativo),
+   así nunca taparán nada. Muy sutil para mantener textura. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0; /* top:0; right:0; bottom:0; left:0; */
+  pointer-events: none; /* no interfiere con clicks */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.03) 0px,
+    rgba(255,255,255,0.03) 1px,
+    rgba(0,0,0,0) 2px
+  );
+  opacity: 0.12;
+  z-index: -1; /* importantísimo: detrás de TODO */
+  mix-blend-mode: overlay;
 }
 
-button:hover {
-  border-color: #646cff;
+/* opcional: ligera capa de ruido (muy sutil), también detrás */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60'><filter id='noise'><feTurbulence baseFrequency='0.9' numOctaves='1' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23noise)' opacity='0.03' /></svg>");
+  opacity: 0.06;
+  z-index: -1;
 }
 
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-
-  a:hover {
-    color: #747bff;
-  }
-
-  button {
-    background-color: #f9f9f9;
-  }
+/* Asegurar que los contenedores principales se posicionen sobre el fondo */
+#root, .app, .home, .chooser {
+  position: relative;
+  z-index: 0; /* por si acaso */
 }
