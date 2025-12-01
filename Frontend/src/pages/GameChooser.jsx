@@ -9,7 +9,8 @@ export default function GameChooser({ games, index, chooseGame, selectedGame }) 
   if (!game1 || !game2) return null;
 
   return (
-    <div className="chooser">
+    <div className="chooser scanlines">
+
 
       {selectedGame && (
         <div className="selected-game">
