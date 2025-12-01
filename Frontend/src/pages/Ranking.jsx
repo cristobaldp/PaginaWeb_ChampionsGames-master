@@ -1,6 +1,7 @@
 export default function Ranking({ ranking, onRestart }) {
   return (
-    <div className="ranking">
+    <div className="ranking scanlines">
+
       <h2>🎮 Tu Ranking Final</h2>
 
       <div className="ranking-list">
