@@ -1,10 +1,26 @@
-// Backend/models/Game.js
-const mongoose = require('../database').mongoose;
+// models/Game.js
+import mongoose from 'mongoose';
 
 const gameSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  description: String,
-  createdAt: { type: Date, default: Date.now }
+  // Mongo DB crea automáticamente el campo de id
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+    maxlength: 100 
+  },
+  description: {
+    type: String,
+    required: false, 
+    trim: true,
+    maxlength: 500
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
 });
 
-module.exports = mongoose.model('Game', gameSchema);
+// Exporta el modelo
+const GameModel = mongoose.model('Game', gameSchema);
+export default GameModel;
