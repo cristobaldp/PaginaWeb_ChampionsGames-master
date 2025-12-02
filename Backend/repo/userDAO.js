@@ -1,5 +1,5 @@
 // dao/user.dao.js
-import UserModel from '../models/user.model.js';
+import UserModel from '../models/User.js';
 
 class UserDAO {
   // CREATE - Crear nuevo usuario

@@ -1,65 +1,39 @@
-// backend/scripts/test-crud.js
+// scripts/test-create-user.js
 import 'dotenv/config';
-import mongoose from 'mongoose';
 import connectDB from '../config/db.js';
-import UserDAO from '../dao/user.dao.js';
+import UserDAO from '../repo/userDAO.js';
 import bcrypt from 'bcrypt';
+import mongoose from 'mongoose';
 
-const testCRUD = async () => {
+const testCreateUser = async () => {
   try {
-    await connectDB(process.env.MONGO_URL);
-    console.log('✅ Conectado a MongoDB\n');
+    await connectDB(process.env.MONGO_URI);
+    console.log('Conectado a MongoDB');
 
     const userDAO = new UserDAO();
 
-    // CREATE
-    console.log('📝 Creando usuarios...');
-    const user1 = await userDAO.create({
+    const userData = {
       username: 'jugador1',
       email: 'jugador1@test.com',
-      password: await bcrypt.hash('pass123', 10)
-    });
-    console.log('✅ Usuario 1 creado:', user1.toJSON());
+      password: await bcrypt.hash('password123', 10)
+    };
 
-    const user2 = await userDAO.create({
-      username: 'jugador2',
-      email: 'jugador2@test.com',
-      password: await bcrypt.hash('pass456', 10)
-    });
-    console.log('✅ Usuario 2 creado:', user2.toJSON());
+    const newUser = await userDAO.create(userData);
+    console.log('Usuario creado:', newUser.toJSON());
 
-    // READ
-    console.log('\n📖 Leyendo usuario por ID...');
-    const foundUser = await userDAO.findById(user1._id);
-    console.log('✅ Usuario encontrado:', foundUser.toJSON());
-
-    // UPDATE
-    console.log('\n✏️ Actualizando usuario...');
-    const updated = await userDAO.updatePartial(user1._id, {
-      username: 'jugador1_pro'
-    });
-    console.log('✅ Usuario actualizado:', updated.toJSON());
-
-    // LIST ALL
-    console.log('\n📋 Listando todos los usuarios...');
     const allUsers = await userDAO.findAll();
-    console.log(`✅ Total: ${allUsers.length} usuarios`);
-    allUsers.forEach((user, index) => {
-      console.log(`  ${index + 1}.`, user.toJSON());
+    console.log('\nTotal de usuarios:', allUsers.length);
+    allUsers.forEach(user => {
+      console.log('  -', user.toJSON());
     });
-
-    // DELETE
-    console.log('\n🗑️ Eliminando usuario 2...');
-    const deleted = await userDAO.delete(user2._id);
-    console.log('✅ Usuario eliminado:', deleted);
 
     await mongoose.connection.close();
-    console.log('\n✅ Conexión cerrada');
+    console.log('\nConexión cerrada');
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error('Error:', error.message);
     process.exit(1);
   }
 };
 
-testCRUD();
+testCreateUser();
