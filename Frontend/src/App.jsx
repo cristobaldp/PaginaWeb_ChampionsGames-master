@@ -2,8 +2,12 @@ import { useEffect, useState } from "react";
 import Home from "./pages/Home";
 import GameChooser from "./pages/GameChooser";
 import Ranking from "./pages/Ranking";
+import FloatingBackground from "./components/FloatingBackground";
+import StarsParallax from "./components/StarsParallax";
 import "./App.css";
+import "./components/FloatingBackground.css";
 import { mockGames } from "./mock/games";
+import "./components/Podium3D.css";
 
 
 export default function App() {
@@ -14,7 +18,6 @@ export default function App() {
   const [screen, setScreen] = useState("home");
 
   // Cargar juegos desde el backend
-
 
   useEffect(() => {
     fetch("http://localhost:3000/api/games")
@@ -58,6 +61,9 @@ export default function App() {
 
   return (
     <>
+      <StarsParallax />
+      <FloatingBackground />
+      
       {screen === "home" && <Home onStart={start} />}
       {screen === "game" && (
         <GameChooser
@@ -66,7 +72,6 @@ export default function App() {
           chooseGame={chooseGame}
           selectedGame={selectedGame}
         />
-
       )}
       {screen === "ranking" && (
         <Ranking ranking={ranking} onRestart={restart} />
