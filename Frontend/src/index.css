@@ -1,12 +1,13 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Orbitron", sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background: radial-gradient(circle at top, #2b1055, #000000 70%);
-  font-family: "Press Start 2P", cursive;
+  
+  /* ¡¡BORRADO EL BACKGROUND DE AQUÍ!! → ahora lo controla App.css y se mueve */
+  
   margin: 0;
 
   font-synthesis: none;
@@ -28,6 +29,7 @@ a:hover {
 body {
   margin: 0;
   min-width: 320px;
+  /* El fondo lo pinta App.css con animación → aquí NO tocamos nada */
 }
 
 h1 {
@@ -56,10 +58,10 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Tema claro (por si alguien lo activa) */
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background-color: #ffffff;
   }
 
   a:hover {
