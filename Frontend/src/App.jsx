@@ -7,6 +7,7 @@ import StarsParallax from "./components/StarsParallax";
 import "./App.css";
 import "./components/FloatingBackground.css";
 import { mockGames } from "./mock/games";
+import "./components/Podium3D.css";
 
 
 export default function App() {
