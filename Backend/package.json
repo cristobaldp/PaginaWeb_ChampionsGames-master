@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon ./index.js"
+    "dev": "nodemon ./index.js",
+    "test-user": "node ./scripts/test_crear_user.js"
   },
   "keywords": [],
   "author": "",
