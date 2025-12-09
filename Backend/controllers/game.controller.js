@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import * as gameDAO from "../dao/GameDao.js"; // usa las funciones exportadas en tu DAO
+import * as gameDAO from "../routes/game.routes.js"; // usa las funciones exportadas en tu DAO
 
 // Crear juego
 export const createGame = async (req, res) => {

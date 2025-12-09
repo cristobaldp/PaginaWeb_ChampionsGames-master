@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import cors from 'cors';
 import userRoutes from './routes/user.routes.js';
-
+import gameRoutes from './routes/game.routes.js';
 
 dotenv.config();
 
@@ -27,14 +27,14 @@ await connectDB(process.env.MONGO_URI);
 app.get('/', (req, res) => {
   res.json({ message: 'Api de usuarios funcionando correctamente' });
 });
-app.use('/api',userRoutes);
+app.use('/api/users',userRoutes);
+app.use('/api/games',gameRoutes);
 
 app.listen(PORT, () => {
   console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
-  console.log(`📡 Endpoints disponibles:`);
-  console.log(`   GET    http://localhost:${PORT}/api/users`);
-  console.log(`   POST   http://localhost:${PORT}/api/users`);
-  console.log(`   GET    http://localhost:${PORT}/api/users/:id`);
-  console.log(`   PUT    http://localhost:${PORT}/api/users/:id`);
-  console.log(`   DELETE http://localhost:${PORT}/api/users/:id`);
+  console.log(`📡 API disponible en http://localhost:${PORT}/api`);
+  console.log(`\n📋 Endpoints disponibles:`);
+  console.log(`   👤 Usuarios: http://localhost:${PORT}/api/users`);
+  console.log(`   🎮 Juegos:   http://localhost:${PORT}/api/games`);
+
 });
