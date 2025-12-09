@@ -1,6 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
+import cors from 'cors';
+import userRoutes from './routes/user.routes.js';
 
 
 dotenv.config();
@@ -25,7 +27,8 @@ await connectDB(process.env.MONGO_URI);
 app.get('/', (req, res) => {
   res.json({ message: 'Api de usuarios funcionando correctamente' });
 });
-app.use('/api', require('./routes/userRoutes'));
+app.use('/api',userRoutes);
+
 app.listen(PORT, () => {
   console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
 
