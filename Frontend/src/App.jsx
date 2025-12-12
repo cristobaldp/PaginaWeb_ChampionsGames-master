@@ -12,25 +12,22 @@ import "./components/Podium3D.css";
 
 import { mockGames } from "./mock/games";
 
-// 🔥 Importamos Login y Register
+// IMPORTAMOS LOGIN & REGISTER
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
 export default function App() {
-  // ------------------ AUTH ------------------
-  const [user, setUser] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("currentUser"));
-    } catch {
-      return null;
-    }
-  });
 
-  const [authScreen, setAuthScreen] = useState("login");
+  // ------------------- AUTENTICACIÓN -------------------
 
-  function handleLogin(u) {
-    setUser(u);
-    localStorage.setItem("currentUser", JSON.stringify(u));
+  const [user, setUser] = useState(null);
+  const [authScreen, setAuthScreen] = useState("login"); 
+  // login | register | app
+
+  function handleLogin(userData) {
+    setUser(userData);
+    localStorage.setItem("currentUser", JSON.stringify(userData));
+    setAuthScreen("app"); // SOLO entra cuando inicia sesión manualmente
   }
 
   function handleLogout() {
@@ -39,7 +36,8 @@ export default function App() {
     setAuthScreen("login");
   }
 
-  // ------------------ APP ORIGINAL ------------------
+  // ------------------- TU APP ORIGINAL -------------------
+
   const [selectedGame, setSelectedGame] = useState(null);
   const [games, setGames] = useState([]);
   const [index, setIndex] = useState(0);
@@ -84,17 +82,18 @@ export default function App() {
 
   const ranking = [...votes];
 
-  // ------------------ RENDER ------------------
+  // ------------------- RENDER -------------------
+
   return (
     <>
       <StarsParallax />
       <FloatingBackground />
 
-      {/* 🔥 Si NO hay usuario logueado → mostrar login/register */}
-      {!user && (
+      {/* 🔥 SIEMPRE mostrar login o register mientras no esté dentro de la app */}
+      {authScreen !== "app" && (
         <div className="auth-root">
           {authScreen === "login" && (
-            <Login
+            <Login 
               onLogin={handleLogin}
               goRegister={() => setAuthScreen("register")}
             />
@@ -102,17 +101,18 @@ export default function App() {
 
           {authScreen === "register" && (
             <Register
-              onRegister={handleLogin}
+              onRegister={() => setAuthScreen("login")}
               goLogin={() => setAuthScreen("login")}
             />
           )}
         </div>
       )}
 
-      {/* 🔥 Si hay usuario → cargar la app normal */}
-      {user && (
+      {/* 🔥 SOLO mostrar la app cuando haya iniciado sesión manualmente */}
+      {authScreen === "app" && (
         <>
           {screen === "home" && <Home onStart={start} />}
+
           {screen === "game" && (
             <GameChooser
               games={games}
@@ -121,6 +121,7 @@ export default function App() {
               selectedGame={selectedGame}
             />
           )}
+
           {screen === "ranking" && (
             <Ranking ranking={ranking} onRestart={restart} />
           )}

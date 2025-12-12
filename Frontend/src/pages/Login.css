@@ -2,6 +2,18 @@
 /*    LOGIN SCREEN STYLES */
 /* ---------------------- */
 
+/* Hace que el login/register siempre esté centrado */
+.auth-root {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at top, #1c2333 0%, #0d111a 85%);
+  z-index: 9999;
+}
+
+
 .auth-card {
   width: 360px;
   padding: 30px;
