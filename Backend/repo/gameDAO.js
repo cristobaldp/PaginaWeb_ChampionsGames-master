@@ -1,3 +1,4 @@
+// dao/GameDao.js
 import mongoose from "mongoose";
 import Game from "../models/Game.js";
 
@@ -15,18 +16,13 @@ export default class GameDAO {
   }
 
   /**
-   * findAll(opciones)
-   * opciones: {
-   *   filter: Object,        // { name: /foo/i } etc.
-   *   page: Number,          // 1-based
-   *   limit: Number,         // items por pagina
-   *   sort: Object           // { creadoEn: -1 } etc.
-   * }
-   * Devuelve: { data: [...], total: Number, page: Number, limit: Number }
+   * findAll(options)
+   * options: { filter: Object, page: Number, limit: Number, sort: Object }
+   * Returns: { data, total, page, limit }
    */
-  async findAll(opciones = {}) {
+  async findAll(options = {}) {
     try {
-      const { filter = {}, page = 1, limit = 0, sort = { creadoEn: -1 } } = opciones;
+      const { filter = {}, page = 1, limit = 0, sort = { createdAt: -1 } } = options;
 
       if (limit && limit > 0) {
         const skip = (Math.max(page, 1) - 1) * limit;
@@ -45,7 +41,7 @@ export default class GameDAO {
     }
   }
 
-  // Buscar juego por ID
+  // Buscar por ID
   async findById(id) {
     try {
       if (!mongoose.Types.ObjectId.isValid(id)) return null;
@@ -55,11 +51,10 @@ export default class GameDAO {
     }
   }
 
-  // Buscar por nombre (exacto). Puedes cambiar a case-insensitive si lo deseas.
+  // Buscar por nombre (case-insensitive exact)
   async findByName(name) {
     try {
       if (!name) return null;
-      // búsqueda case-insensitive y trim
       const nameTrim = name.toString().trim();
       return await Game.findOne({ name: { $regex: `^${this._escapeRegex(nameTrim)}$`, $options: "i" } });
     } catch (err) {
@@ -85,5 +80,10 @@ export default class GameDAO {
     } catch (err) {
       throw err;
     }
+  }
+
+  // helper para escapar regex metachars
+  _escapeRegex(text) {
+    return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 }

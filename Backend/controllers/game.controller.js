@@ -1,12 +1,14 @@
+// controllers/game.controller.js
 import mongoose from "mongoose";
-import * as gameDAO from "../routes/game.routes.js"; // usa las funciones exportadas en tu DAO
+import GameDAO from "../dao/GameDao.js";
+
+const gameDAO = new GameDAO();
 
 // Crear juego
 export const createGame = async (req, res) => {
   try {
     const { name, description } = req.body;
 
-    // Validaciones básicas
     if (!name || !name.toString().trim().length) {
       return res.status(400).json({ error: "Faltan datos: name es obligatorio" });
     }
@@ -18,18 +20,10 @@ export const createGame = async (req, res) => {
       return res.status(400).json({ error: "La descripción no puede tener más de 500 caracteres" });
     }
 
-    // Comprobar duplicado por name si existe el método findByName en el DAO
-    if (typeof gameDAO.findByName === "function") {
-      const existing = await gameDAO.findByName(nameTrim);
-      if (existing) {
-        return res.status(400).json({ error: "Ya existe un juego con ese nombre" });
-      }
-    } else {
-        // alternativa: buscar en findAll
-        const all = await gameDAO.findAll();
-        if (all.some(g => g.name && g.name.toString().trim().toLowerCase() === nameTrim.toLowerCase())) {
-            return res.status(400).json({ error: "Ya existe un juego con ese nombre" });
-        }
+    // comprobar duplicado por name usando el DAO
+    const existing = await gameDAO.findByName(nameTrim);
+    if (existing) {
+      return res.status(400).json({ error: "Ya existe un juego con ese nombre" });
     }
 
     const game = await gameDAO.create({ name: nameTrim, description: description ? description.toString().trim() : undefined });
@@ -44,14 +38,25 @@ export const createGame = async (req, res) => {
   }
 };
 
-// Obtener todos los juegos
+// Obtener todos los juegos (con soporte opcional de ?page=&limit=&name=)
 export const getAllGames = async (req, res) => {
   try {
-    // opcional: soportar paginación vía query ?page=1&limit=10
-    const games = await gameDAO.findAll();
-    const gamesResp = Array.isArray(games) ? games.map(g => (g.toJSON ? g.toJSON() : g)) : [];
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 0;
+    const name = req.query.name; // opcional filter por nombre parcial/exacto
+    const filter = {};
+
+    if (name) {
+      // búsqueda case-insensitive que contenga la cadena
+      filter.name = { $regex: name.toString().trim(), $options: "i" };
+    }
+
+    const { data, total } = await gameDAO.findAll({ filter, page, limit, sort: { createdAt: -1 }});
+    const gamesResp = data.map(g => (g.toJSON ? g.toJSON() : g));
     res.status(200).json({
-      count: gamesResp.length,
+      count: total,
+      page,
+      limit: limit || total,
       games: gamesResp
     });
   } catch (error) {
@@ -64,16 +69,11 @@ export const getAllGames = async (req, res) => {
 export const getGameById = async (req, res) => {
   try {
     const { id } = req.params;
-
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "ID inválido" });
     }
-
     const game = await gameDAO.findById(id);
-    if (!game) {
-      return res.status(404).json({ error: "Juego no encontrado" });
-    }
-
+    if (!game) return res.status(404).json({ error: "Juego no encontrado" });
     res.status(200).json({ game: game.toJSON ? game.toJSON() : game });
   } catch (error) {
     console.error("Error al obtener el juego:", error);
@@ -86,12 +86,10 @@ export const updateGame = async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body || {};
-
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "ID inválido" });
     }
 
-    // Validaciones parciales
     if (updates.name !== undefined) {
       if (!updates.name || !updates.name.toString().trim().length) {
         return res.status(400).json({ error: "El name no puede estar vacío" });
@@ -99,15 +97,10 @@ export const updateGame = async (req, res) => {
       if (updates.name.toString().length > 100) {
         return res.status(400).json({ error: "El nombre no puede tener más de 100 caracteres" });
       }
-
-      // comprobar duplicado por name si existe findByName
       const nameTrim = updates.name.toString().trim();
-      if (typeof gameDAO.findByName === "function") {
-        const existing = await gameDAO.findByName(nameTrim);
-        // si existe y no es el mismo id -> error
-        if (existing && existing._id && existing._id.toString() !== id) {
-          return res.status(400).json({ error: "Ya existe otro juego con ese nombre" });
-        }
+      const existing = await gameDAO.findByName(nameTrim);
+      if (existing && existing._id && existing._id.toString() !== id) {
+        return res.status(400).json({ error: "Ya existe otro juego con ese nombre" });
       }
       updates.name = nameTrim;
     }
@@ -119,10 +112,8 @@ export const updateGame = async (req, res) => {
       updates.description = updates.description ? updates.description.toString().trim() : updates.description;
     }
 
-    const updated = await gameDAO.updateById(id, updates);
-    if (!updated) {
-      return res.status(404).json({ error: "Juego no encontrado" });
-    }
+    const updated = await gameDAO.update(id, updates);
+    if (!updated) return res.status(404).json({ error: "Juego no encontrado" });
 
     res.status(200).json({
       message: "Juego actualizado exitosamente",
@@ -138,16 +129,11 @@ export const updateGame = async (req, res) => {
 export const deleteGame = async (req, res) => {
   try {
     const { id } = req.params;
-
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "ID inválido" });
     }
-
-    const deleted = await gameDAO.deleteById(id);
-    if (!deleted) {
-      return res.status(404).json({ error: "Juego no encontrado" });
-    }
-
+    const deleted = await gameDAO.delete(id);
+    if (!deleted) return res.status(404).json({ error: "Juego no encontrado" });
     res.status(200).json({
       message: "Juego eliminado exitosamente",
       game: deleted.toJSON ? deleted.toJSON() : deleted
