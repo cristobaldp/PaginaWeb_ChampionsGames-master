@@ -11,25 +11,32 @@ import {
   importBatch,
   getRandomGame,
   pickGame,
-  resetPicks
+  resetPicks,
+  importAllFromFreeToGame,
+  getCompactGames
 } from '../controllers/game.controller.js';
 
 const router = express.Router();
 
+// CRUD básico
 router.post('/', createGame);
 router.get('/', getAllGames);
 
-// import / external (antes de '/:id')
+// Rutas de import / external (deben ir antes de '/:id')
 router.get('/external/:id', fetchExternalGame);
 router.post('/import/:id', importExternalGame);
 router.post('/import', importBatch);
 
-// random / pick flow
+// NUEVAS rutas: import all y compact (antes de '/:id')
+router.post('/import-all', importAllFromFreeToGame);
+router.get('/compact', getCompactGames);
+
+// Random / pick
 router.get('/random', getRandomGame);
 router.post('/pick/:id', pickGame);
 router.post('/reset-picks', resetPicks);
 
-// rutas con :id al final
+// Rutas con :id al final
 router.get('/:id', getGameById);
 router.put('/:id', updateGame);
 router.delete('/:id', deleteGame);
