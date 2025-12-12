@@ -1,7 +1,7 @@
 // controllers/game.controller.js
 import axios from "axios";
 import mongoose from "mongoose";
-import GameDAO from "../repo/GameDao.js";
+import GameDAO from "../repo/gameDAO.js"; // ajustado a tu carpeta 'repo'
 
 const gameDAO = new GameDAO();
 
@@ -134,10 +134,16 @@ export const importExternalGame = async (req, res) => {
     const description = (external.short_description || "").toString().trim();
     if (!name) return res.status(400).json({ error: "Recurso externo sin título" });
 
-    // Evitar duplicados por externalId o name
-    const existingByExternal = external.id ? await GameDAO.prototype.findByName.call(gameDAO, name) : null;
-    const existing = await gameDAO.findByName(name);
-    if (existing) return res.status(400).json({ error: "Ya existe un juego con ese nombre en la BD", game: existing.toJSON ? existing.toJSON() : existing });
+    // Evitar duplicados: primero por externalId, luego por name
+    const existingByExternal = external.id ? await gameDAO.findByExternalId(String(external.id)) : null;
+    if (existingByExternal) {
+      return res.status(400).json({ error: "Ya existe un juego con ese externalId en la BD", game: existingByExternal.toJSON ? existingByExternal.toJSON() : existingByExternal });
+    }
+
+    const existingByName = await gameDAO.findByName(name);
+    if (existingByName) {
+      return res.status(400).json({ error: "Ya existe un juego con ese nombre en la BD", game: existingByName.toJSON ? existingByName.toJSON() : existingByName });
+    }
 
     const gameData = {
       name,
@@ -162,7 +168,7 @@ export const importBatch = async (req, res) => {
   try {
     const ids = Array.isArray(req.body.ids) ? req.body.ids : null;
     if (!ids || !ids.length) return res.status(400).json({ error: "Debes enviar un array 'ids' en el body" });
-    if (ids.length > 50) return res.status(400).json({ error: "Máximo 50 ids por petición" });
+    if (ids.length > 500) return res.status(400).json({ error: "Máximo 500 ids por petición" });
 
     const results = await Promise.allSettled(ids.map(async (extId) => {
       if (!extId || isNaN(Number(extId))) return { id: extId, status: "invalid" };
@@ -172,6 +178,10 @@ export const importBatch = async (req, res) => {
         const external = r.data;
         const name = (external.title || "").toString().trim();
         if (!name) return { id: extId, status: "no-title" };
+
+        // Evitar duplicados por externalId primero
+        const existingByExternal = external.id ? await gameDAO.findByExternalId(String(external.id)) : null;
+        if (existingByExternal) return { id: extId, status: "exists", game: existingByExternal.toJSON ? existingByExternal.toJSON() : existingByExternal };
 
         const existing = await gameDAO.findByName(name);
         if (existing) return { id: extId, status: "exists", game: existing.toJSON ? existing.toJSON() : existing };
@@ -232,9 +242,130 @@ export const pickGame = async (req, res) => {
 export const resetPicks = async (req, res) => {
   try {
     const result = await gameDAO.resetAllPicked();
-    return res.status(200).json({ message: "Reseteadas las elecciones", modifiedCount: result.nModified ?? result.modifiedCount ?? result.modifiedCount });
+    // result.modifiedCount en mongoose 6/7
+    return res.status(200).json({ message: "Reseteadas las elecciones", modifiedCount: result.modifiedCount ?? result.nModified ?? 0 });
   } catch (err) {
     console.error("resetPicks:", err);
     return res.status(500).json({ error: err.message });
+  }
+};
+
+// POST /api/games/import-all
+// Descarga https://www.freetogame.com/api/games y los importa en batches,
+// evitando duplicados por externalId (y por name si externalId faltase).
+export const importAllFromFreeToGame = async (req, res) => {
+  try {
+    const BATCH_SIZE = parseInt(req.query.batchSize) || 50; // opcional ?batchSize=30
+    const REMOTE_ALL_URL = 'https://www.freetogame.com/api/games';
+
+    // 1) obtener listado completo desde FreeToGame
+    const r = await axios.get(REMOTE_ALL_URL, { timeout: 30000 });
+    const remoteGames = Array.isArray(r.data) ? r.data : [];
+    if (!remoteGames.length) return res.status(200).json({ message: "No hay juegos externos disponibles", total: 0 });
+
+    // 2) procesar por batches
+    let imported = 0;
+    let exists = 0;
+    let errors = 0;
+    const results = [];
+
+    for (let i = 0; i < remoteGames.length; i += BATCH_SIZE) {
+      const batch = remoteGames.slice(i, i + BATCH_SIZE);
+
+      // procesar secuencialmente cada item del batch para no saturar la BD
+      for (const external of batch) {
+        try {
+          const extId = external.id ? String(external.id) : undefined;
+          const name = (external.title || '').toString().trim();
+          const description = (external.short_description || '').toString().trim();
+          const thumbnail = external.thumbnail || undefined;
+          const genre = external.genre || undefined;
+          const platform = external.platform || undefined;
+
+          if (!name) {
+            results.push({ extId, status: 'no-title' });
+            errors++;
+            continue;
+          }
+
+          // comprobar duplicado por externalId
+          let existing = null;
+          if (extId) existing = await gameDAO.findByExternalId(extId);
+          if (!existing) existing = await gameDAO.findByName(name);
+
+          if (existing) {
+            results.push({ extId, status: 'exists', id: existing._id?.toString?.() });
+            exists++;
+            continue;
+          }
+
+          // crear
+          const created = await gameDAO.create({
+            name,
+            description: description || undefined,
+            externalId: extId || undefined,
+            thumbnail,
+            genre,
+            platform
+          });
+
+          results.push({ extId, status: 'imported', id: created._id.toString() });
+          imported++;
+        } catch (err) {
+          errors++;
+          results.push({ extId: external?.id, status: 'error', error: err.message || String(err) });
+        }
+      }
+      // pequeña pausa para no golpear la API/BD (ajustable)
+      await new Promise(r => setTimeout(r, 200));
+    }
+
+    return res.status(200).json({
+      message: "Import completo",
+      totalRemote: remoteGames.length,
+      imported,
+      exists,
+      errors,
+      detailsCount: results.length,
+      sample: results.slice(0, 20) // devolver solo una muestra para no saturar la respuesta
+    });
+  } catch (err) {
+    console.error("importAllFromFreeToGame:", err);
+    return res.status(500).json({ error: err.message || 'Error importando todos los juegos' });
+  }
+};
+
+// GET /api/games/compact?limit=100&random=true
+// Devuelve lista compacta de { _id, name, thumbnail } para mostrar en galería
+export const getCompactGames = async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit) || 100, 1000); // límite máximo 1000
+    const random = req.query.random === 'true' || req.query.random === true;
+
+    if (random) {
+      // obtener 'limit' docs aleatorios
+      const pipeline = [
+        { $sample: { size: limit } },
+        { $project: { name: 1, thumbnail: 1 } }
+      ];
+      const docs = await (await gameDAO.findAll()).data; // fallback
+      // Pero preferimos usar aggregate direct con el model: gameDAO no tiene método aggregate, así:
+      // usar Game model directamente sería más simple, pero para mantener abstracción:
+      // Hacemos consulta simple: si hay menos de limit, devuelve todas.
+      const all = (await gameDAO.findAll({ limit: 0 })).data;
+      const shuffled = all.sort(() => 0.5 - Math.random()).slice(0, limit);
+      const compact = shuffled.map(d => ({ _id: d._id, name: d.name, thumbnail: d.thumbnail }));
+      return res.status(200).json({ count: compact.length, games: compact });
+    } else {
+      // paginado simple por fecha
+      const page = Math.max(parseInt(req.query.page) || 1, 1);
+      const offset = (page - 1) * limit;
+      const { data, total } = await gameDAO.findAll({ filter: {}, page, limit, sort: { createdAt: -1 }});
+      const compact = data.map(d => ({ _id: d._id, name: d.name, thumbnail: d.thumbnail }));
+      return res.status(200).json({ count: total, page, limit, games: compact });
+    }
+  } catch (err) {
+    console.error("getCompactGames:", err);
+    return res.status(500).json({ error: err.message || 'Error obteniendo juegos compactos' });
   }
 };

@@ -1,4 +1,4 @@
-// dao/GameDao.js
+// repo/gameDAO.js
 import mongoose from "mongoose";
 import Game from "../models/Game.js";
 
@@ -48,6 +48,16 @@ export default class GameDAO {
       if (!name) return null;
       const nameTrim = name.toString().trim();
       return await Game.findOne({ name: { $regex: `^${this._escapeRegex(nameTrim)}$`, $options: "i" } });
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  // Buscar por externalId (más fiable para evitar duplicados)
+  async findByExternalId(externalId) {
+    try {
+      if (!externalId) return null;
+      return await Game.findOne({ externalId: String(externalId) });
     } catch (err) {
       throw err;
     }
