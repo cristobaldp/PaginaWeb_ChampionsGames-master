@@ -21,6 +21,22 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [authScreen, setAuthScreen] = useState("login"); // login | register | app
 
+  // Si hay usuario en localStorage, inicializamos sesión automáticamente
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("currentUser");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed) {
+          setUser(parsed);
+          setAuthScreen("app");
+        }
+      }
+    } catch (e) {
+      // ignore parse errors
+    }
+  }, []);
+
   function handleLogin(userData) {
     setUser(userData);
     localStorage.setItem("currentUser", JSON.stringify(userData));
@@ -41,8 +57,8 @@ export default function App() {
   const [screen, setScreen] = useState("home");
   const [loading, setLoading] = useState(false);
 
-  // Ajusta BASE_API si tu backend NO está en localhost:3000
-  const BASE_API = "http://localhost:3000/api/games";
+  // Ajusta BASE_API al puerto donde corre tu backend
+  const BASE_API = "http://localhost:8080/api/games";
 
   useEffect(() => {
     let mounted = true;
@@ -78,10 +94,15 @@ export default function App() {
 
   function start() {
     // Antes de `start`, asegurarse que hay al menos 2 juegos para GameChooser.
-    // Si sólo hay 1, duplicamos uno aleatorio para evitar que GameChooser devuelva null.
-    if (games.length === 1) {
+    // Si sólo hay 1, duplicamos uno aleatorio. Si no hay ninguno, usamos mockGames.
+    if (!games || games.length === 0) {
+      setGames(mockGames);
+    } else if (games.length === 1) {
       setGames((g) => [...g, g[0]]);
     }
+    setIndex(0); // arrancar desde el principio
+    setSelectedGame(null);
+    setVotes([]);
     setScreen("game");
   }
 
@@ -89,10 +110,10 @@ export default function App() {
   async function markPickOnServer(gameId) {
     if (!gameId) return;
     try {
-      // endpoint moderno
+      // endpoint moderno: POST /api/games/pick/:id
       const r = await fetch(`${BASE_API}/pick/${gameId}`, { method: "POST" });
       if (r.ok) return true;
-      // fallback legacy
+      // fallback legacy: POST /api/games/:id/select
       const r2 = await fetch(`${BASE_API}/${gameId}/select`, { method: "POST" });
       return r2.ok;
     } catch (e) {
@@ -114,12 +135,9 @@ export default function App() {
     setVotes((prev) => [...prev, game]);
 
     // 3) avanzar index si hay suficientes juegos
-    // Asegurarse de no pasar del array
     const nextIndex = index + 2;
     if (nextIndex <= games.length - 1) {
       setIndex(nextIndex);
-      // si al avanzar nos quedamos con menos de 2 elementos restantes y el backend tiene /random,
-      // podriamos pedir más y pusharlos; pero para no complicar, por ahora usamos la lista local.
     } else {
       // No hay más pares disponibles -> ir a ranking
       setScreen("ranking");
@@ -150,7 +168,9 @@ export default function App() {
         <div className="auth-root">
           {authScreen === "login" && <Login onLogin={handleLogin} goRegister={() => setAuthScreen("register")} />}
 
-          {authScreen === "register" && <Register onRegister={() => setAuthScreen("login")} goLogin={() => setAuthScreen("login")} />}
+          {authScreen === "register" && (
+            <Register onRegister={() => setAuthScreen("login")} goLogin={() => setAuthScreen("login")} />
+          )}
         </div>
       )}
 
