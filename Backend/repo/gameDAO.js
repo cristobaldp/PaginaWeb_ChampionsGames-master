@@ -1,29 +1,111 @@
 // dao/GameDao.js
-import Game from '../models/Game.js';
+import mongoose from "mongoose";
+import Game from "../models/Game.js";
 
-// CRUD sencillo
-// Crear juego
-export const create = async (gameData) => {
-  const game = new Game(gameData);
-  return await game.save();
-};
+export default class GameDAO {
+  constructor() {}
 
-// Buscar juegos
-export const findAll = async () => {
-  return await Game.find();
-};
+  async create(gameData) {
+    try {
+      const game = new Game(gameData);
+      return await game.save();
+    } catch (err) {
+      throw err;
+    }
+  }
 
-// Buscar juego por ID
-export const findById = async (id) => {
-  return await Game.findById(id);
-};
+  async findAll(options = {}) {
+    try {
+      const { filter = {}, page = 1, limit = 0, sort = { createdAt: -1 } } = options;
+      if (limit && limit > 0) {
+        const skip = (Math.max(page, 1) - 1) * limit;
+        const [data, total] = await Promise.all([
+          Game.find(filter).sort(sort).skip(skip).limit(limit),
+          Game.countDocuments(filter)
+        ]);
+        return { data, total, page: Math.max(page, 1), limit };
+      } else {
+        const data = await Game.find(filter).sort(sort);
+        const total = Array.isArray(data) ? data.length : 0;
+        return { data, total, page: 1, limit: total };
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
 
-// Actualizar juego por ID
-export const updateById = async (id, data) => {
-  return await Game.findByIdAndUpdate(id, data, { new: true });
-};
+  async findById(id) {
+    try {
+      if (!mongoose.Types.ObjectId.isValid(id)) return null;
+      return await Game.findById(id);
+    } catch (err) {
+      throw err;
+    }
+  }
 
-// Borrar juego por ID
-export const deleteById = async (id) => {
-  return await Game.findByIdAndDelete(id);
-};
+  async findByName(name) {
+    try {
+      if (!name) return null;
+      const nameTrim = name.toString().trim();
+      return await Game.findOne({ name: { $regex: `^${this._escapeRegex(nameTrim)}$`, $options: "i" } });
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async update(id, data) {
+    try {
+      if (!mongoose.Types.ObjectId.isValid(id)) return null;
+      return await Game.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async delete(id) {
+    try {
+      if (!mongoose.Types.ObjectId.isValid(id)) return null;
+      return await Game.findByIdAndDelete(id);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  // Devuelve 1 juego aleatorio que no esté marcado como picked (o null si no hay)
+  async getRandomUnpicked() {
+    try {
+      const pipeline = [
+        { $match: { picked: { $ne: true } } },
+        { $sample: { size: 1 } }
+      ];
+      const [doc] = await Game.aggregate(pipeline).exec();
+      return doc || null;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  // Marca un juego (por id) como picked = true
+  async markPicked(id) {
+    try {
+      if (!mongoose.Types.ObjectId.isValid(id)) return null;
+      return await Game.findByIdAndUpdate(id, { $set: { picked: true } }, { new: true });
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  // Resetea todos los picked a false
+  async resetAllPicked() {
+    try {
+      const res = await Game.updateMany({ picked: true }, { $set: { picked: false } });
+      return res;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  _escapeRegex(text) {
+    return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+}
