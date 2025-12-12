@@ -1,7 +1,7 @@
 import GameCard from "../components/GameCard";
 
 export default function GameChooser({ games, index, chooseGame, selectedGame }) {
-  if (!games.length) return <h2>Cargando juegos...</h2>;
+  if (!games?.length) return <h2>Cargando juegos...</h2>;
 
   const game1 = games[index];
   const game2 = games[index + 1];
@@ -10,12 +10,10 @@ export default function GameChooser({ games, index, chooseGame, selectedGame }) 
 
   return (
     <div className="chooser scanlines">
-
-
       {selectedGame && (
         <div className="selected-game">
-          <img src={selectedGame.image} alt={selectedGame.title} />
-          <h3>{selectedGame.title}</h3>
+          <img src={selectedGame.image ?? selectedGame.coverUrl ?? selectedGame.thumbnail} alt={selectedGame.title ?? selectedGame.name} />
+          <h3>{selectedGame.title ?? selectedGame.name}</h3>
         </div>
       )}
 
@@ -25,7 +23,6 @@ export default function GameChooser({ games, index, chooseGame, selectedGame }) 
         <GameCard game={game1} onSelect={() => chooseGame(game1)} />
         <GameCard game={game2} onSelect={() => chooseGame(game2)} />
       </div>
-    
     </div>
   );
 }
