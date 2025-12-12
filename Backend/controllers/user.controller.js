@@ -1,5 +1,6 @@
 import UserDAO from "../repo/userDAO.js";
 import bcrypt from "bcrypt";
+import User from '../models/User.js';
 
 const userDAO = new UserDAO();
 
@@ -36,12 +37,14 @@ export const createUser = async (req, res) => {
         if (existingEmail) {
             return res.status(400).json({ error: "El email ya existe" });
         }
-        
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const user = await userDAO.create({ username, 
-                                            email, 
-                                            password: hashedPassword });
+        const user = await userDAO.create({
+            username,
+            email,
+            password: hashedPassword
+        });
 
         res.status(201).json({
             message: "Usuario creado correctamente",
@@ -67,18 +70,19 @@ export const getAllUsers = async (req, res) => {
 
 export const getUserById = async (req, res) => {
     try {
-        const { id } = await userDAO.findById(id);
-        if (!user) {
-            
-            return res.status(404).json({ error: "Usuario no encontrado" });
-        }
-        res.status(200).json({user: user.toJSON()});
+        // Usa un nombre distinto (userId) para evitar colisiones/TDZ
+        const userId = req.params.id ?? req.params.userId;
+        if (!userId) return res.status(400).json({ error: 'Missing user id' });
 
-    } catch (error) {
-        console.error("Error al obtener el usuario:", error);
-        res.status(500).json({ error: error.message });
+        const user = await User.findById(userId).lean();
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        return res.json(user);
+    } catch (err) {
+        console.error('Error al obtener el usuario:', err.stack || err);
+        return res.status(500).json({ error: 'Server error' });
     }
-}
+};
 
 export const updateUser = async (req, res) => {
     try {
@@ -91,7 +95,7 @@ export const updateUser = async (req, res) => {
 
         if (updates.password) {
             updates.password = await bcrypt.hash(updates.password, 10);
-        }        
+        }
         const updatedUser = await userDAO.update(id, updates);
 
         if (!updatedUser) {
@@ -117,7 +121,7 @@ export const deleteUser = async (req, res) => {
         res.status(200).json({
             message: 'Usuario eliminado exitosamente',
             user: user.toJSON()
-          });
+        });
     } catch (error) {
         console.error("Error al eliminar el usuario:", error);
         res.status(500).json({ error: error.message });
