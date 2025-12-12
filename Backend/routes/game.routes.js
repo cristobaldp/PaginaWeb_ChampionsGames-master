@@ -2,14 +2,14 @@
 import express from 'express';
 import {
   createGame,
-  getAllGames,
+  getAllGames, // importante
   getGameById,
   updateGame,
   deleteGame,
   fetchExternalGame,
   importExternalGame,
   importBatch,
-  getRandomGame,
+  getRandomGame, // importante
   pickGame,
   resetPicks,
   importAllFromFreeToGame,
