@@ -1,62 +1,73 @@
 import React, { useState } from "react";
-import "./register.css";  // IMPORTAR EL CSS DE REGISTER
+import "./register.css";
 
 export default function Register({ onRegister, goLogin }) {
-  const [gmail, setGmail] = useState("");
   const [username, setUsername] = useState("");
+  const [gmail, setGmail] = useState(""); // email real
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
+  const [confirmar, setConfirmar] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setError("");
+    setSuccess("");
 
-    if (!gmail.includes("@")) {
-      setError("Introduce un Gmail válido.");
-      return;
+    if (password !== confirmar) {
+      return setError("Las contraseñas no coinciden");
     }
 
-    if (password.length < 4) {
-      setError("La contraseña debe tener al menos 4 caracteres.");
-      return;
+    try {
+      const res = await fetch("http://localhost:8080/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: username,
+          email: gmail,
+          password: password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "No se pudo crear el usuario");
+        return;
+      }
+
+      // Usuario creado correctamente
+      setSuccess("Usuario registrado correctamente");
+
+      // Volver al login tras 1 segundo
+      setTimeout(() => {
+        onRegister();
+      }, 1000);
+
+    } catch (err) {
+      console.error("Error:", err);
+      setError("No se pudo conectar con el servidor");
     }
-
-    if (password !== confirm) {
-      setError("Las contraseñas no coinciden.");
-      return;
-    }
-
-    const users = JSON.parse(localStorage.getItem("users") || "{}");
-
-    if (users[username]) {
-      setError("Ese usuario ya existe.");
-      return;
-    }
-
-    users[username] = { gmail, password };
-    localStorage.setItem("users", JSON.stringify(users));
-
-    onRegister({ username, gmail });
   }
 
   return (
     <div className="auth-card">
-      <h2>Crear cuenta ✨</h2>
+      <h2>Crear Cuenta</h2>
+
       <form onSubmit={handleSubmit}>
-        <label>Gmail</label>
-        <input
-          type="email"
-          value={gmail}
-          onChange={(e) => setGmail(e.target.value)}
-          placeholder="tucorreo@gmail.com"
-        />
 
         <label>Nombre de usuario</label>
         <input
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          placeholder="@usuario"
+          required
+        />
+
+        <label>Email</label>
+        <input
+          value={gmail}
+          onChange={(e) => setGmail(e.target.value)}
+          required
         />
 
         <label>Contraseña</label>
@@ -64,20 +75,22 @@ export default function Register({ onRegister, goLogin }) {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="••••••"
+          required
         />
 
         <label>Confirmar contraseña</label>
         <input
           type="password"
-          value={confirm}
-          onChange={(e) => setConfirm(e.target.value)}
-          placeholder="••••••"
+          value={confirmar}
+          onChange={(e) => setConfirmar(e.target.value)}
+          required
         />
 
         {error && <p className="error">{error}</p>}
+        {success && <p className="success">{success}</p>}
 
         <button type="submit">Registrarme</button>
+
         <button type="button" onClick={goLogin}>
           Ya tengo cuenta
         </button>

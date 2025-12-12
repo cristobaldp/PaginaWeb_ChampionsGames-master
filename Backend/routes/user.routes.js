@@ -5,13 +5,17 @@ import {
   getAllUsers,
   getUserById,
   updateUser,
-  deleteUser
+  deleteUser,
+  loginUser                 // ← IMPORTACIÓN AÑADIDA
 } from '../controllers/user.controller.js';
 
 const router = express.Router();
 
 // POST /api/users - Crear usuario
 router.post('/', createUser);
+
+// POST /api/users/login - Iniciar sesión
+router.post('/login', loginUser);   // ← NUEVA RUTA
 
 // GET /api/users - Obtener todos los usuarios
 router.get('/', getAllUsers);
