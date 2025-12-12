@@ -25,17 +25,24 @@ export default function App() {
   useEffect(() => {
     try {
       const stored = localStorage.getItem("currentUser");
+      const auto = localStorage.getItem("autoLogin") === "true"; // controla auto-login
       if (stored) {
         const parsed = JSON.parse(stored);
         if (parsed) {
           setUser(parsed);
-          setAuthScreen("app");
+          if (auto) {
+            setAuthScreen("app");
+          } else {
+            // forzamos que se quede en login
+            setAuthScreen("login");
+          }
         }
       }
     } catch (e) {
-      // ignore parse errors
+      // ignore
     }
   }, []);
+
 
   function handleLogin(userData) {
     setUser(userData);
