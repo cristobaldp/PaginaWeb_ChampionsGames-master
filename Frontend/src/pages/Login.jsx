@@ -1,55 +1,68 @@
 import React, { useState } from "react";
-import "./login.css";  // IMPORTAR EL CSS DE LOGIN
+import "./login.css";
 
 export default function Login({ onLogin, goRegister }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setError("");
 
-    const users = JSON.parse(localStorage.getItem("users") || "{}");
-    const user = users[username];
+    try {
+      const res = await fetch("http://localhost:8080/api/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
 
-    if (!user) {
-      setError("El usuario no existe.");
-      return;
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Error al iniciar sesión");
+        return;
+      }
+
+      // Guardar usuario en localStorage
+      localStorage.setItem("currentUser", JSON.stringify(data.user));
+
+      // Entrar a la aplicación
+      onLogin(data.user);
+
+    } catch (err) {
+      console.error(err);
+      setError("No se pudo conectar con el servidor");
     }
-
-    if (user.password !== password) {
-      setError("Contraseña incorrecta.");
-      return;
-    }
-
-    onLogin({ username, gmail: user.gmail });
   }
 
   return (
     <div className="auth-card">
-      <h2>Bienvenido 👋</h2>
+      <h2>Iniciar Sesión</h2>
+
       <form onSubmit={handleSubmit}>
         <label>Nombre de usuario</label>
         <input
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={e => setUsername(e.target.value)}
           placeholder="Tu usuario..."
+          required
         />
 
         <label>Contraseña</label>
         <input
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
           placeholder="••••••"
+          required
         />
 
         {error && <p className="error">{error}</p>}
 
-        <button type="submit">Iniciar sesión</button>
+        <button type="submit">Entrar</button>
         <button type="button" onClick={goRegister}>
-          Crear nueva cuenta
+          Crear cuenta
         </button>
       </form>
     </div>
