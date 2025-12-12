@@ -5,7 +5,6 @@ import Game from "../models/Game.js";
 export default class GameDAO {
   constructor() {}
 
-  // Crear juego
   async create(gameData) {
     try {
       const game = new Game(gameData);
@@ -15,15 +14,9 @@ export default class GameDAO {
     }
   }
 
-  /**
-   * findAll(options)
-   * options: { filter: Object, page: Number, limit: Number, sort: Object }
-   * Returns: { data, total, page, limit }
-   */
   async findAll(options = {}) {
     try {
       const { filter = {}, page = 1, limit = 0, sort = { createdAt: -1 } } = options;
-
       if (limit && limit > 0) {
         const skip = (Math.max(page, 1) - 1) * limit;
         const [data, total] = await Promise.all([
@@ -41,7 +34,6 @@ export default class GameDAO {
     }
   }
 
-  // Buscar por ID
   async findById(id) {
     try {
       if (!mongoose.Types.ObjectId.isValid(id)) return null;
@@ -51,7 +43,6 @@ export default class GameDAO {
     }
   }
 
-  // Buscar por nombre (case-insensitive exact)
   async findByName(name) {
     try {
       if (!name) return null;
@@ -62,7 +53,6 @@ export default class GameDAO {
     }
   }
 
-  // Actualizar por ID
   async update(id, data) {
     try {
       if (!mongoose.Types.ObjectId.isValid(id)) return null;
@@ -72,7 +62,6 @@ export default class GameDAO {
     }
   }
 
-  // Borrar por ID
   async delete(id) {
     try {
       if (!mongoose.Types.ObjectId.isValid(id)) return null;
@@ -82,7 +71,40 @@ export default class GameDAO {
     }
   }
 
-  // helper para escapar regex metachars
+  // Devuelve 1 juego aleatorio que no esté marcado como picked (o null si no hay)
+  async getRandomUnpicked() {
+    try {
+      const pipeline = [
+        { $match: { picked: { $ne: true } } },
+        { $sample: { size: 1 } }
+      ];
+      const [doc] = await Game.aggregate(pipeline).exec();
+      return doc || null;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  // Marca un juego (por id) como picked = true
+  async markPicked(id) {
+    try {
+      if (!mongoose.Types.ObjectId.isValid(id)) return null;
+      return await Game.findByIdAndUpdate(id, { $set: { picked: true } }, { new: true });
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  // Resetea todos los picked a false
+  async resetAllPicked() {
+    try {
+      const res = await Game.updateMany({ picked: true }, { $set: { picked: false } });
+      return res;
+    } catch (err) {
+      throw err;
+    }
+  }
+
   _escapeRegex(text) {
     return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
