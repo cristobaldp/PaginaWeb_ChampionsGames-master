@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon ./index.js",
-    "test-user": "node ./scripts/test_crear_user.js"
+    "test-user": "node ./scripts/test_crear_user.js",
+    "test": "mocha"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +24,8 @@
     "normalize-mongoose": "^1.0.0"
   },
   "devDependencies": {
+    "chai": "^6.2.2",
+    "mocha": "^11.7.5",
     "nodemon": "^3.1.11"
   }
 }
