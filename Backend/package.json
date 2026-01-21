@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon ./index.js",
-    "test-user": "node ./scripts/test_crear_user.js",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "test-user": "node ./scripts/test_crear_user.js"
   },
   "keywords": [],
   "author": "",
@@ -25,7 +23,6 @@
     "normalize-mongoose": "^1.0.0"
   },
   "devDependencies": {
-    "cypress": "^15.9.0",
     "nodemon": "^3.1.11"
   }
 }
