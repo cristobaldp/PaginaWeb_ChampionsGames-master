@@ -8,22 +8,31 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+<<<<<<< HEAD
+    "test": "jest",
+=======
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
     "test:mocha": "mocha --require @babel/register --require test/setup.js \"src/__tests__/**/*.mocha.js\"",
    
+>>>>>>> 02040e423fe8c34fe179ca8ea4d0ad9899a877f8
     "cypress:open": "cypress open",
     "cypress:run": "cypress run"
   },
   "dependencies": {
     "axios": "^1.13.2",
+    "cypress": "^15.9.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.28.6",
+<<<<<<< HEAD
+    "@babel/psreset-env": "^7.28.6",
+=======
     "@babel/preset-env": "^7.28.6",
     "@babel/preset-react": "^7.28.5",
     "@babel/register": "^7.28.6",
+>>>>>>> 02040e423fe8c34fe179ca8ea4d0ad9899a877f8
     "@eslint/js": "^9.39.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
