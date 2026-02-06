@@ -2,8 +2,10 @@ name: Mutation Testing
 
 on:
   push:
-    branches: [ main ]
+    branches: [ Rama-Adrian ]
   pull_request:
+    branches: [ Rama-Adrian ]
+
 
 jobs:
   mutation-test:
@@ -31,3 +33,4 @@ jobs:
         with:
           name: mutation-report
           path: Frontend/reports/mutation/mutation.html
+
