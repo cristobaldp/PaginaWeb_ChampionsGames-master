@@ -23,7 +23,7 @@ describe("Login.jsx - manejo de errores", () => {
 
     // escribir usuario y contraseña
     fireEvent.change(
-      screen.getByPlaceholderText("Tu usuario..."),
+      screen.getByPlaceholderText("Tu usuario...."),
       { target: { value: "usuario" } }
     );
 
