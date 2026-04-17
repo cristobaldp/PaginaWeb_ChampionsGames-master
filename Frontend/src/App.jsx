@@ -70,7 +70,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [votesMap, setVotesMap] = useState({});
 
-  const BASE_API = "http://localhost:8080/api/games";
+  const BASE_API = "http://localhost:3000/api/games";
 
   useEffect(() => {
     let mounted = true;
