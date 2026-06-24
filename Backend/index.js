@@ -11,12 +11,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// SOLUCIÓN CORS: Ahora acepta tanto el puerto 5173 como el 5174 de tu Frontend de forma automática
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    process.env.FRONTEND_URL,
-    "https://championsweb.adriantarancon.dev"
-  ].filter(Boolean),
+  origin: true,
   credentials: true
 }));
 
