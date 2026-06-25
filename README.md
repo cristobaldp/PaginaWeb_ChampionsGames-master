@@ -1,44 +1,44 @@
 # Champion Games
 
-Champion Games es una aplicación web interactiva que permite al usuario elegir entre pares de videojuegos, registrar sus preferencias y generar un ranking personalizado según sus elecciones [file:1].
+Champion Games es una aplicación web interactiva que permite al usuario elegir entre pares de videojuegos, registrar sus preferencias y generar un ranking personalizado según sus elecciones .
 
 ## Descripción
 
 La web presenta dos videojuegos en pantalla y solicita al usuario que elija cuál prefiere.  
-A medida que avanza la interacción, el sistema adapta las siguientes comparaciones y, al finalizar, muestra un ranking final con los juegos más valorados por el usuario [file:1].
+A medida que avanza la interacción, el sistema adapta las siguientes comparaciones y, al finalizar, muestra un ranking final con los juegos más valorados por el usuario .
 
 ## Objetivo del proyecto
 
-El objetivo principal es ayudar al usuario a identificar qué videojuegos encajan mejor con sus gustos, a partir de un proceso de selección visual, dinámico y sencillo [file:1].
+El objetivo principal es ayudar al usuario a identificar qué videojuegos encajan mejor con sus gustos, a partir de un proceso de selección visual, dinámico y sencillo .
 
 ## Funcionalidades
 
-- Comparación entre dos videojuegos en cada ronda [file:1].
-- Selección guiada por el usuario para registrar preferencias [file:1].
-- Obtención de juegos desde una base de datos MongoDB [file:1].
-- Selección aleatoria de juegos para cada nueva comparación [file:1].
-- Generación de un ranking personalizado al finalizar las elecciones [file:1].
-- Interfaz moderna con estilo visual tipo gaming y animaciones [file:1].
+- Comparación entre dos videojuegos en cada ronda .
+- Selección guiada por el usuario para registrar preferencias .
+- Obtención de juegos desde una base de datos MongoDB .
+- Selección aleatoria de juegos para cada nueva comparación .
+- Generación de un ranking personalizado al finalizar las elecciones .
+- Interfaz moderna con estilo visual tipo gaming y animaciones .
 
 ## Tecnologías utilizadas
 
 ### Frontend
-- React [file:1]
-- Vite [file:1]
-- JavaScript [file:1]
-- CSS [file:1]
+- React
+- Vite 
+- JavaScript
+- CSS 
 
 ### Backend
-- Node.js [file:1]
-- Express [file:1]
-- MongoDB [file:1]
-- Mongoose [file:1]
+- Node.js 
+- Express 
+- MongoDB 
+- Mongoose 
 
 ### Herramientas de trabajo
-- Visual Studio Code [file:1]
-- Git [file:1]
-- Discord [file:1]
-- Jira [file:1]
+- Visual Studio Code 
+- Git 
+- Discord 
+- Jira 
 
 ## Estructura del proyecto
 
@@ -66,42 +66,42 @@ project/
 
 ## Páginas principales
 
-- `Home.jsx`: página de inicio [file:1].
-- `GameChooser.jsx`: pantalla donde se comparan los videojuegos [file:1].
-- `Ranking.jsx`: vista final con el ranking personalizado [file:1].
+- `Home.jsx`: página de inicio .
+- `GameChooser.jsx`: pantalla donde se comparan los videojuegos .
+- `Ranking.jsx`: vista final con el ranking personalizado .
 
 ## Flujo de funcionamiento
 
-1. El frontend solicita los videojuegos al backend [file:1].
-2. El backend obtiene los datos desde MongoDB [file:1].
-3. Los juegos se barajan aleatoriamente para evitar sesgos [file:1].
-4. El usuario va eligiendo entre dos opciones en cada ronda [file:1].
-5. El sistema registra los votos y actualiza el juego campeón [file:1].
-6. Al llegar al número máximo de elecciones, se genera el ranking final [file:1].
+1. El frontend solicita los videojuegos al backend .
+2. El backend obtiene los datos desde MongoDB .
+3. Los juegos se barajan aleatoriamente para evitar sesgos .
+4. El usuario va eligiendo entre dos opciones en cada ronda .
+5. El sistema registra los votos y actualiza el juego campeón .
+6. Al llegar al número máximo de elecciones, se genera el ranking final .
 
 ## Backend
 
-El backend se encarga de la conexión con la base de datos, la creación de modelos y la gestión de operaciones CRUD [file:1].
+El backend se encarga de la conexión con la base de datos, la creación de modelos y la gestión de operaciones CRUD.
 
 ### Componentes del backend
-- `index.js`: punto de entrada y pruebas de conexión/API [file:1].
-- `models/`: definición de esquemas con Mongoose [file:1].
-- `dao/`: operaciones de crear, leer, actualizar y borrar [file:1].
-- `controllers/`: lógica intermedia entre rutas y datos [file:1].
-- `routes/`: endpoints disponibles para el frontend [file:1].
+- `index.js`: punto de entrada y pruebas de conexión/API .
+- `models/`: definición de esquemas con Mongoose .
+- `dao/`: operaciones de crear, leer, actualizar y borrar .
+- `controllers/`: lógica intermedia entre rutas y datos.
+- `routes/`: endpoints disponibles para el frontend .
 
 ## Frontend
 
-El frontend está desarrollado con React y organizado en carpetas para componentes reutilizables, páginas y recursos estáticos [file:1].
+El frontend está desarrollado con React y organizado en carpetas para componentes reutilizables, páginas y recursos estáticos .
 
 ### Elementos importantes
-- `components/`: componentes visuales reutilizables [file:1].
-- `mock/`: datos de prueba para simular el backend [file:1].
-- `pages/`: pantallas principales de la aplicación [file:1].
+- `components/`: componentes visuales reutilizables .
+- `mock/`: datos de prueba para simular el backend .
+- `pages/`: pantallas principales de la aplicación.
 
 ## Diseño visual
 
-La interfaz apuesta por un estilo limpio, moderno y visualmente atractivo, con elementos como fondos animados, bordes neón, tipografías estilizadas y tarjetas flotantes [file:1].
+La interfaz apuesta por un estilo limpio, moderno y visualmente atractivo, con elementos como fondos animados, bordes neón, tipografías estilizadas y tarjetas flotantes .
 
 ## Instalación
 
@@ -132,12 +132,12 @@ npm run dev
 
 ## API
 
-La aplicación expone endpoints REST para obtener juegos, guardar datos y gestionar el ranking final [file:1].
+La aplicación expone endpoints REST para obtener juegos, guardar datos y gestionar el ranking final .
 
 ## Resultado final
 
-El sistema permite seleccionar videojuegos de forma intuitiva, mantener un campeón persistente durante las comparaciones y mostrar un ranking final ordenado, visual y centrado en las preferencias del usuario [file:1].
+El sistema permite seleccionar videojuegos de forma intuitiva, mantener un campeón persistente durante las comparaciones y mostrar un ranking final ordenado, visual y centrado en las preferencias del usuario .
 
 ## Autoría
 
-Proyecto desarrollado como una aplicación web de selección de videojuegos y ranking personalizado [file:1].
+Proyecto desarrollado como una aplicación web de selección de videojuegos y ranking personalizado .
